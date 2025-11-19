@@ -5,6 +5,7 @@ const port = 3000;
 const { request, response } = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const Product = require("./models/product");
 require("dotenv").config();
 const { DB_URI } = process.env;
 
@@ -28,4 +29,61 @@ mongoose
 // Routes
 server.get("/", (request, response) => {
 	response.send("Live");
+});
+
+server.get("/products", async (request, response) => {
+	try {
+		const product = await Product.find();
+		response.send(product);
+	} catch (error) {
+		response.status(500).json({ message: error.message });
+	}
+});
+
+server.post("/add-product", async (request, response) => {
+	const { name, brand, price, image } = request.body;
+	const newProduct = new Product({
+		productName: name,
+		brand,
+		price: parseFloat(price),
+		image
+	});
+	try {
+		await newProduct.save();
+		response.status(201).json({ message: "Product added successfully" });
+	} catch (error) {
+		console.log(error);
+		response.status(400).json({ message: error.message });
+	}
+});
+
+server.delete("/products/:id", async (request, response) => {
+	const { id } = request.params;
+	const objectId = new mongoose.Types.ObjectId(id); // Convert id to Mongoose ObjectId
+	try {
+		await Product.findByIdAndDelete(objectId);
+		response.status(200).json({ message: "Product deleted successfully" });
+	} catch (error) {
+		response.status(404).json({ message: error.message });
+	}
+});
+
+server.patch("/products/:id", async (request, response) => {
+	const { id } = request.params;
+	const { name, brand, price, image } = request.body;
+	const objectId = new mongoose.Types.ObjectId(id); // Convert id to Mongoose ObjectId
+	try {
+		await Product.findByIdAndUpdate(id, {
+			productName: name,
+			brand,
+			price,
+			image
+		}).then((response) => {
+			console.log(response);
+		});
+
+		await response.status(200).json({ message: "Product updated successfully" });
+	} catch (error) {
+		response.status(404).json({ message: error.message });
+	}
 });
