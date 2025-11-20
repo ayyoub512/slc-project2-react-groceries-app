@@ -26,11 +26,16 @@ mongoose
 		console.log("Error connecting to the database", error.message);
 	});
 
-// Routes
+/**
+ * Routes
+ *  */
+
+// GET index
 server.get("/", (request, response) => {
 	response.send("Live");
 });
 
+// GET all products from mongodb
 server.get("/products", async (request, response) => {
 	try {
 		const product = await Product.find();
@@ -40,6 +45,7 @@ server.get("/products", async (request, response) => {
 	}
 });
 
+// POST - Used to add product to database and communicate back on operation status
 server.post("/add-product", async (request, response) => {
 	const { name, brand, price, image } = request.body;
 	const newProduct = new Product({
@@ -57,6 +63,8 @@ server.post("/add-product", async (request, response) => {
 	}
 });
 
+// DELETE - Used to delete a product idenitified by the :id
+// Also communicates back whether the operation is a success
 server.delete("/products/:id", async (request, response) => {
 	const { id } = request.params;
 	const objectId = new mongoose.Types.ObjectId(id); // Convert id to Mongoose ObjectId
@@ -68,6 +76,7 @@ server.delete("/products/:id", async (request, response) => {
 	}
 });
 
+// PATCH - Used to update a product
 server.patch("/products/:id", async (request, response) => {
 	const { id } = request.params;
 	const { name, brand, price, image } = request.body;

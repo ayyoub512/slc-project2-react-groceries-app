@@ -2,8 +2,8 @@
 
 export default function ProductsForm({ isEditing, formData, handleOnChange, handleOnSubmit, register, handleSubmit, errors }) {
 	return (
-		<div className="contact-form">
-			<form onSubmit={handleSubmit(handleOnSubmit)}>
+		<div className="">
+			<form onSubmit={handleSubmit(handleOnSubmit)} className="product-form">
 				<div>
 					<input
 						type="text"

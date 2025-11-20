@@ -12,6 +12,7 @@ export default function GroceriesAppContainer() {
 	// Will hold the quantity of each product
 	const [productQuantity, setProductQuantity] = useState([]);
 
+	// Loads products on page load once
 	useEffect(() => {
 		handleProductsDB();
 	}, []);
@@ -21,6 +22,7 @@ export default function GroceriesAppContainer() {
 		setProductQuantity(products.map((product) => ({ id: product.id, quantity: 0 })));
 	}, [products]);
 
+	// Function to handle calling the backend and retreiving products
 	const handleProductsDB = async () => {
 		try {
 			const response = await axios.get("http://localhost:3000/products");
@@ -30,6 +32,7 @@ export default function GroceriesAppContainer() {
 		}
 	};
 
+	// State for cart
 	const [cartList, setCartList] = useState([]);
 
 	const handleAddQuantity = (productId, mode) => {
@@ -100,15 +103,21 @@ export default function GroceriesAppContainer() {
 		setCartList([]);
 	};
 
-	// Products Form
+	// This state is mainly used to communicate backend response to user
 	const [postResponse, setPostResponse] = useState("");
+
+	// This state is used for products we fetch from backend
 	const [productData, setProductData] = useState([]);
+
+	// Stores product form data
 	const [formData, setFormData] = useState({
 		name: "",
 		brand: "",
 		image: "",
 		price: ""
 	});
+
+	// Stores whehther we're in editing mode or not
 	const [isEditing, setIsEditing] = useState(false);
 
 	// React Hook Form
@@ -196,9 +205,8 @@ export default function GroceriesAppContainer() {
 	return (
 		<div>
 			<NavBar quantity={cartList.length} />
-			<h1>Products Form</h1>
 
-			<ProductsForm formData={formData} handleOnChange={handleOnchange} handleOnSubmit={handleOnSubmit} isEditing={isEditing} register={register} handleSubmit={handleSubmit} errors={errors} />
+			<p style={{ color: "green" }}>{postResponse}</p>
 
 			<div className="GroceriesApp-Container">
 				<ProductsContainer
@@ -210,15 +218,28 @@ export default function GroceriesAppContainer() {
 					handleDelete={handleDelete}
 					handleEdit={handleEdit}
 				/>
-				<p style={{ color: "green" }}>{postResponse}</p>
 
-				<CartContainer
-					cartList={cartList}
-					handleRemoveFromCart={handleRemoveFromCart}
-					handleAddQuantity={handleAddQuantity}
-					handleRemoveQuantity={handleRemoveQuantity}
-					handleClearCart={handleClearCart}
-				/>
+				<div className="form-cart-container">
+					<div>
+						<h2>Product Form</h2>
+						<ProductsForm
+							formData={formData}
+							handleOnChange={handleOnchange}
+							handleOnSubmit={handleOnSubmit}
+							isEditing={isEditing}
+							register={register}
+							handleSubmit={handleSubmit}
+							errors={errors}
+						/>
+					</div>
+					<CartContainer
+						cartList={cartList}
+						handleRemoveFromCart={handleRemoveFromCart}
+						handleAddQuantity={handleAddQuantity}
+						handleRemoveQuantity={handleRemoveQuantity}
+						handleClearCart={handleClearCart}
+					/>
+				</div>
 			</div>
 		</div>
 	);
